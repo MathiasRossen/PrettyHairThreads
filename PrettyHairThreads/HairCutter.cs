@@ -9,10 +9,13 @@ namespace PrettyHairThreads
 {
     class HairCutter
     {
+        private static readonly object padLock = new object();
+
         int sessions = 10;
         Random rand;
         int minSleep = 100;
         int maxSleep = 600;
+        bool canCut = false;
 
         public string Name { get; set; }
         public Scissor LeftScissor { get; set; }
@@ -32,7 +35,10 @@ namespace PrettyHairThreads
 
             while(sessions > 0)
             {
-                TryToGetScissors();
+                if (canCut)
+                    CutSession();
+                else
+                    TryToGetScissors();
             }
 
             Console.WriteLine("{0} has completed cutting. Going home!", Name);
@@ -42,11 +48,17 @@ namespace PrettyHairThreads
         {
             if(!LeftScissor.BeingUsed && !RightScissor.BeingUsed)
             {
-                LeftScissor.BeingUsed = true;
-                RightScissor.BeingUsed = true;
+                lock (padLock)
+                {
+                    if (!LeftScissor.BeingUsed && !RightScissor.BeingUsed)
+                    {
+                        LeftScissor.BeingUsed = true;
+                        RightScissor.BeingUsed = true;
 
-                Console.WriteLine("{0} and {1} weren't in use and are occupied by {2}", LeftScissor.Name, RightScissor.Name, Name);
-                CutSession();
+                        Console.WriteLine("{0} and {1} weren't in use and are occupied by {2}", LeftScissor.Name, RightScissor.Name, Name);
+                        canCut = true;
+                    }
+                }
             }
             else
             {
@@ -68,6 +80,7 @@ namespace PrettyHairThreads
         {
             LeftScissor.BeingUsed = false;
             RightScissor.BeingUsed = false;
+            canCut = false;
 
             Console.WriteLine("{0} is taking a break.. {1} and {2} were released.", Name, LeftScissor.Name, RightScissor.Name);
             Thread.Sleep(rand.Next(minSleep, maxSleep));

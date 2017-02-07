@@ -8,18 +8,9 @@ namespace PrettyHairThreads
 {
     class Scissor
     {
-        object padLock = new object();
-        private bool beingUsed;
         public bool BeingUsed
         {
-            get { return beingUsed; }
-            set
-            {
-                lock (padLock)
-                {
-                    beingUsed = value;
-                }
-            }
+            get; set;
         }
         public string Name { get; set; }
 

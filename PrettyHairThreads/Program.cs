@@ -43,15 +43,10 @@ namespace PrettyHairThreads
             Thread task6 = new Thread(hc6.StartCutting);
 
             task1.Start();
-            Thread.Sleep(10);
             task2.Start();
-            Thread.Sleep(10);
             task3.Start();
-            Thread.Sleep(10);
             task4.Start();
-            Thread.Sleep(10);
             task5.Start();
-            Thread.Sleep(10);
             task6.Start();
 
             Console.Read();
